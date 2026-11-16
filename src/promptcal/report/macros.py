@@ -31,25 +31,19 @@ LAB = {"identity": "uncalibrated", "temperature": "temperature scaling",
        "phc_cat": "PhC+category"}
 
 
-# Results are written as ``<stem>.json`` by the full runs and as
-# ``_partial_<stem>.json`` / ``_smoke_<stem>.json`` by the reduced runs used while
-# the extraction is still going. ``PCC_TAG`` pins the prefix explicitly so a smoke
-# run never silently overwrites the numbers of a full one.
 def load(name):
-    stem = name.replace(".json", "")
-    short = stem.split("_")[0]          # p1_describe -> p1
-    cands = []
-    tag = os.environ.get("PCC_TAG", "")
-    if tag:
-        cands.append(f"{tag}{stem}")
-    cands += [stem, f"_partial_{stem}", f"_partial_{short}", f"_smoke_{stem}"]
-    for c in cands:
-        p = os.path.join(RES, c + ".json")
-        if os.path.exists(p):
-            if c != stem:
-                print(f"  [warn] {stem}: reading {c}.json (reduced run)")
-            return json.load(open(p, encoding="utf-8"))
-    return None
+    """One result file, or ``None`` if the experiment has not been run.
+
+    There is deliberately no fallback to a reduced run: a manuscript that silently quotes
+    a smoke run is worse than one that prints ``--`` and says the experiment is missing.
+    ``PROMPTCAL_RESULTS`` (or ``--results-dir``) is the way to point at another set.
+    """
+    path = os.path.join(RES, name.replace(".json", "") + ".json")
+    if not os.path.exists(path):
+        print(f"  [warn] {name}: not found, macros print --")
+        return None
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
 
 
 def _write(name, lines):
