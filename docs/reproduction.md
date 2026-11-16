@@ -85,6 +85,11 @@ to reorder, does not.
 at is the last one per method, the worst-case threshold at `alpha = 0.30`; this is Table 4
 and Fig. 3.
 
+**`promptcal diagnose-band`** is not part of the pipeline: it reports the per-wording FDR
+at a pooled threshold with and without the band weighting, and is the evidence behind one
+sentence in the discussion (that the residual disagreement is not a weighting artefact).
+It takes about a minute and writes nothing.
+
 **`promptcal transfer`** — COCO to LVIS, 6.06M detections over 4,752 annotated images and
 1,203 unseen categories.  Expect band ECE 0.198 (uncalibrated) and 0.084 (PhC), AP 0.577 for
 both, and `vector` at 0.277 — worse than doing nothing, because none of its 80 category rows

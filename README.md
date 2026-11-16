@@ -154,7 +154,7 @@ test that checks each one.
 
 ```bash
 pip install -e ".[dev]"
-pytest              # ~10 s, CPU only, no data
+pytest              # a few seconds, CPU only, no data, no GPU
 ```
 
 The tests pin the parts a refactor could silently break: the five wordings stay distinct
@@ -176,6 +176,9 @@ on a synthetic calibration set.
 ```
 
 `CITATION.cff` carries the same information for GitHub's "Cite this repository" button.
+
+If you are the one publishing this repository, `docs/release-checklist.md` lists what to
+change first (the `your-org` placeholder, the tag, the DOI).
 
 ## License and third-party components
 
