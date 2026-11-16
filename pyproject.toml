@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "promptcal-ovd"
+version = "1.0.0"
+description = "Prompt-conditioned calibration and risk control for open-vocabulary detectors"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+  { name = "Meng Tan" },
+  { name = "Shengkai Zhou" },
+  { name = "Ling Lin" },
+]
+keywords = [
+  "open-vocabulary detection",
+  "calibration",
+  "conformal prediction",
+  "grounding dino",
+  "reliability",
+]
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Image Recognition",
+]
+# torch is a core dependency: PhC fits its head with autograd, and every baseline is
+# fitted the same way.  Only the extraction stage needs transformers and OpenCV, and
+# only the figures need matplotlib, so those are extras.
+dependencies = [
+  "numpy>=1.24",
+  "torch>=2.0",
+]
+
+[project.optional-dependencies]
+extract = [
+  "transformers>=4.40",
+  "opencv-python>=4.8",
+  "pillow>=9.5",
+]
+figures = ["matplotlib>=3.7"]
+dev = [
+  "pytest>=7.4",
+  "ruff>=0.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/CHANGE-ME/promptcal-ovd"
+Issues = "https://github.com/CHANGE-ME/promptcal-ovd/issues"
+
+[project.scripts]
+promptcal = "promptcal.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 96
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]

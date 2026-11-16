@@ -1,0 +1,8 @@
+# normalise line endings: the code is developed on Windows and read everywhere
+* text=auto eol=lf
+
+# binary and generated-once files
+*.pdf binary
+*.png binary
+*.npz binary
+*.jpg binary

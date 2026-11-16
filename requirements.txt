@@ -1,0 +1,12 @@
+# Minimal environment for the analysis stages (no detector, no plots):
+#   pip install -r requirements.txt
+numpy>=1.24
+torch>=2.0
+
+# Uncomment for the extraction stage (`promptcal extract`, `promptcal embed`):
+# transformers>=4.40
+# opencv-python>=4.8
+# pillow>=9.5
+
+# Uncomment for `promptcal figures`:
+# matplotlib>=3.7

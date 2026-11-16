@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper (under review)."
+title: "promptcal-ovd: prompt-conditioned calibration for open-vocabulary detectors"
+abstract: >-
+  Reference implementation of phrase-conditioned calibration (PhC) and of the
+  experiments measuring how the wording of a text prompt changes the scores,
+  the calibration and the risk of an open-vocabulary detector.
+type: software
+version: 1.0.0
+license: MIT
+repository-code: "https://github.com/your-org/promptcal-ovd"
+keywords:
+  - open-vocabulary detection
+  - calibration
+  - conformal prediction
+  - risk control
+  - grounding dino
+authors:
+  - family-names: Tan
+    given-names: Meng
+  - family-names: Zhou
+    given-names: Shengkai
+  - family-names: Lin
+    given-names: Ling
+preferred-citation:
+  type: article
+  title: "Naming the object changes the answer: calibration and risk control for open-vocabulary detectors"
+  authors:
+    - family-names: Tan
+      given-names: Meng
+    - family-names: Zhou
+      given-names: Shengkai
+    - family-names: Lin
+      given-names: Ling
+  journal: Applied Intelligence
+  year: 2026

@@ -1,0 +1,119 @@
+\documentclass[pdflatex,sn-basic]{sn-jnl}
+
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage[title]{appendix}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{manyfoot}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{bm}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\input{nums}
+
+% sn-jnl sets a 372x553pt text block, which is the block for Springer's 155x235mm trim
+% size, and then lays it out on an A4 page from the top. On A4 that leaves about 75mm of
+% white at the foot of every page: a fifth of the paper, and a reviewer reads it as a
+% broken layout. The width is left alone -- figures and tables are cut to it -- and the
+% height is extended so that the top and bottom margins are the same 76pt.
+\setlength{\textheight}{690pt}
+\raggedbottom
+
+% sn-jnl caps a page at three floats. The paper has five tables and three figures and
+% several of them are consecutive in the source; a cap of five costs nothing and stops a
+% queue of floats from forcing a premature page break.
+\setcounter{totalnumber}{5}
+
+\begin{document}
+
+\title[Naming the object]{Naming the object changes the answer: calibration and risk
+control for open-vocabulary detectors}
+
+\author[1]{\fnm{Meng} \sur{Tan}}\email{mengtanmtan@gmail.com}
+
+\author[2]{\fnm{Shengkai} \sur{Zhou}}\email{zhousk095@aliyun.com}
+
+\author[3]{\fnm{Ling} \sur{Lin}}\email{linling@cuit.edu.cn}
+
+\affil[1]{\orgdiv{School of Computing and Artificial Intelligence}, \orgname{Southwestern University of Finance and Economics}, \orgaddress{\city{Chengdu}, \postcode{611130}, \state{Sichuan}, \country{China}}}
+
+\affil[2]{\orgdiv{School of Business Administration}, \orgname{Southwestern University of Finance and Economics}, \orgaddress{\city{Chengdu}, \postcode{611130}, \state{Sichuan}, \country{China}}}
+
+\affil[3]{\orgdiv{College of Artificial Intelligence (CUIT Shuangliu Industrial College)}, \orgname{Chengdu University of Information Technology}, \orgaddress{\city{Chengdu}, \postcode{610225}, \state{Sichuan}, \country{China}}}
+
+\abstract{An open-vocabulary detector is asked for a category by typing a phrase. The
+score it returns is read as the probability that the box is right, but it is computed
+against the phrase, so it is a property of the wording as much as of the region. We
+measure that dependence: holding images, boxes and category fixed and changing only the
+phrasing, the score of the same object moves by \SPREADPTS{} on average, \SPREADFRAC{} of
+instances move by more than $0.1$, and average precision ranges from \APMIN{} to \APMAX.
+We propose prompt-conditioned calibration (PhC), which predicts the two parameters of an
+affine-in-logit map from a 33-dimensional descriptor of the phrase, built from the text
+embedding the detector already computes. The map is strictly increasing in the score for a
+fixed phrase, so average precision is untouched and no extra forward pass is needed. Band
+error falls from \BANDID{} to \BANDPHC{} on COCO and from \TRBANDID{} to \TRBANDPHC{} on
+LVIS without refitting, where a per-category table has nothing to look up. Calibration,
+however, is not risk control: a threshold fitted on the mixed wordings overshoots its false
+discovery target by up to a factor of \FDROVERSHOOT{} on the wording it was not tuned for,
+and no monotone map can repair this, because that target is set by the ordering of the
+boxes. Selecting the threshold inside every wording does hold, and under that guarantee
+the calibrated score keeps \WCGAIN{} more boxes than the uncalibrated one.}
+
+\keywords{open-vocabulary detection, calibration, prompt sensitivity, conformal
+selection, false discovery rate, reliability}
+
+\maketitle
+
+\input{sec1_intro}
+\input{sec2_related}
+\input{sec3_task}
+\input{sec4_method}
+\input{sec5_experiments}
+\input{sec6_discussion}
+
+\backmatter
+
+\bmhead{Acknowledgements}
+The authors thank the curators of the COCO and LVIS benchmarks for making their
+annotations available.
+
+\section*{Declarations}
+
+\bmhead{Funding}
+This research received no specific grant from any funding agency in the public,
+commercial, or not-for-profit sectors.
+
+\bmhead{Competing interests}
+The authors declare that they have no competing interests.
+
+\bmhead{Data availability}
+COCO \citep{lin2014microsoft} is openly available; LVIS \citep{gupta2019lvis} is
+distributed through the LVIS project and requires registration. The detector weights
+used here are public \citep{liu2024grounding}. Detector dumps, fitted calibrators and
+the scripts that reproduce every number and figure are released with the paper.
+
+\bmhead{Author contributions}
+M.T. designed the study, implemented the calibrators and the selection procedure, ran
+the experiments and wrote the manuscript. S.Z. contributed the measurement protocol and
+the statistical analysis. L.L. contributed the transfer experiments and the figure
+design. All authors reviewed and approved the final manuscript.
+
+\renewcommand{\bibfont}{\footnotesize}
+\setlength{\bibsep}{0.5em}
+\bibliography{references}
+
+\end{document}

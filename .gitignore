@@ -1,0 +1,53 @@
+# feature shards and derived data: tens of GB, never in git
+/features/
+/data/
+*.npz
+*.npy
+
+# experiment logs; the JSON results are tracked on purpose
+results/*.txt
+results/log_*.txt
+results/_smoke_*.json
+results/_partial_*.json
+results/_dry_*.json
+results/_test_*.json
+results/_check_*.json
+
+# LaTeX build products
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.synctex.gz
+paper/*.fls
+paper/*.fdb_latexmk
+paper/fig/*.png
+/submission/
+
+# the Springer class files are not redistributed: download the template instead
+paper/sn-jnl.cls
+paper/sn-*.bst
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# local overrides
+.env

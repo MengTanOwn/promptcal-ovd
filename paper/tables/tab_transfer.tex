@@ -1,0 +1,17 @@
+\begin{table}[t]
+\caption{Fitted on COCO and deployed on the LVIS minival split without refitting anything, including the projection used by the phrase descriptor. None of the 1{,}203 LVIS categories was seen during fitting, so a calibrator with a table indexed by category has nothing to look up.}
+\label{tab:transfer}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr@{}}
+\toprule
+Method & band ECE & band Brier & ECE & AP \\
+\midrule
+uncalibrated                       & 0.1978 & 0.2352 & 0.0478 & 0.5771 \\
+temperature scaling                & 0.2434 & 0.2520 & 0.0119 & 0.5771 \\
+vector scaling                     & 0.2766 & 0.2734 & 0.0203 & 0.5771 \\
+isotonic regression                & 0.1118 & 0.2349 & 0.0078 & 0.5093 \\
+per-wording temperature            & 0.2423 & 0.2530 & 0.0118 & 0.5771 \\
+PhC (phrase, linear)               & 0.1136 & 0.2015 & 0.0090 & 0.5771 \\
+PhC (phrase, linear, band-weighted) & \textbf{0.0838} & 0.1936 & 0.0105 & 0.5771 \\
+\bottomrule
+\end{tabular*}
+\end{table}

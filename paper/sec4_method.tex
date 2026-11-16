@@ -1,0 +1,115 @@
+\section{Method}\label{sec:method}
+
+\subsection{Prompt-conditioned calibration}
+
+Let $z$ be the raw classification logit of a detection and $\phi$ the phrase that was used
+to request its category. A scalar calibrator fits one map $z\mapsto\sigma(az+b)$ for all
+detections. We instead let the two parameters be functions of the phrase:
+
+\begin{equation}\label{eq:phc}
+p = \sigma\!\left(z\,e^{-\ell(\phi)} + m(\phi)\right),
+\qquad
+\ell(\phi) = \log T(\phi),\quad m(\phi) = b(\phi),
+\end{equation}
+
+where $\ell$ and $m$ are produced by a linear head on a descriptor $x(\phi)$ of the phrase.
+Since $T(\phi)=e^{\ell(\phi)}>0$ for every phrase, the map is strictly increasing in $z$ for
+fixed $\phi$.
+
+\begin{proposition}[The map cannot reorder a run]\label{prop:mono}
+For any two detections that were requested with the same phrase, $z_i>z_j$ implies
+$p_i>p_j$ under \eqref{eq:phc}. Consequently every ranking metric computed inside a
+single-phrasing run, including average precision and the risk--coverage curve, is unchanged
+by the calibrator.
+\end{proposition}
+
+\begin{proof}
+$T(\phi)>0$, so $z\mapsto z/T(\phi)+m(\phi)$ is strictly increasing, and $\sigma$ is strictly
+increasing.
+\end{proof}
+
+The proposition is the reason the method is safe to use: it can move the score scale, which
+is what thresholds and calibration error are about, and it cannot change the order of the
+boxes a user sees in one run, which is what AP is about. A map that is allowed to depend on
+$z$ in a non-monotone way, such as isotonic regression, does not have this property, and
+Table~\ref{tab:main} shows the AP it costs.
+
+\paragraph{The descriptor.} $x(\phi)$ has 33 entries: the first 24 are a principal-component
+projection of the pooled last-layer text embedding that the detector's own text encoder
+produced for $\phi$ (mean over tokens, no extra forward pass: the encoder already ran); then
+the token count, the character length, the embedding norm, the cosine similarity to the bare
+name of the same category, and a one-hot over the five wordings. The head is linear, so the
+whole calibrator has 68 parameters. We use a linear head because it has to be fitted on the
+phrases one is willing to enumerate, and a linear map on interpretable descriptors degrades
+gracefully when the deployment phrase is outside that set.
+
+\paragraph{Fitting.} The parameters minimise a weighted Brier loss on cached logits,
+\begin{equation}
+\mathcal{L} = \frac{1}{n}\sum_i w_i\,\big(p_i - y_i\big)^2 ,
+\qquad
+w_i = \begin{cases} w_{\rm band} & \text{if the uncalibrated score is in the band}\\ 1 & \text{otherwise,}\end{cases}
+\end{equation}
+with $w_{\rm band}=10$ in the default configuration. The mask is computed once from the
+uncalibrated score and frozen: if it were recomputed from the model's own output, the
+cheapest way to lower a band-weighted loss would be to push boxes out of the band rather
+than to calibrate them.
+
+\subsection{From a calibrated score to a threshold}
+
+A calibrated probability is not yet a decision. The user of an annotation tool ships a
+threshold $\lambda$ and keeps every box with $p\geq\lambda$; what they care about is the
+false discovery rate among the kept boxes, $\mathrm{FDR}=\mathbb{E}[V/R]$ with $R$ the
+number kept and $V$ the number of those that are wrong.
+
+We choose $\lambda$ on a labelled calibration half by conformalised selection
+\citep{jin2023selection}. Order the calibration detections by decreasing score, let $R(k)$
+and $V(k)$ be the number kept and the number wrong among the top $k$, and set
+
+\begin{equation}\label{eq:lambda}
+\hat\lambda = \min\Big\{\lambda \;:\; \frac{1+V(\lambda)}{\max(R(\lambda),1)} \leq \alpha\Big\},
+\end{equation}
+
+the smallest threshold whose conformal estimate of the false discovery proportion is under
+the target $\alpha$. Under exchangeability of calibration and test detections this controls
+$\mathbb{E}[\mathrm{FDR}]$ at $\alpha$ up to a term of order $1/R$
+\citep{jin2023selection,angelopoulos2023conformal}.
+
+The assumption is the interesting part. Exchangeability holds comfortably when the
+calibration and the test detections come from the same phrasing, and it fails when they do
+not: a threshold calibrated on ``dog'' and applied to ``dogs'' is not covered by the
+theorem, and Section~\ref{sec:exp-fdr} measures how far it misses.
+
+It is tempting to suppose that conditioning the score on the phrase restores the
+assumption, by making detections requested with different wordings comparable. It does not,
+and Proposition~\ref{prop:mono} says why it cannot. The false discovery rate at a shared
+threshold is a function of the \emph{order} of the kept boxes, and a monotone map leaves
+that order untouched, so if two wordings disagree about which boxes are the good ones,
+calibration cannot reconcile them. What does work is to require the constraint inside each
+wording:
+
+\begin{equation}\label{eq:lambda-worst}
+\hat\lambda_{\max}(\alpha) \;=\; \max_{v\in\{1..5\}} \hat\lambda_v(\alpha),
+\end{equation}
+
+where $\hat\lambda_v$ is \eqref{eq:lambda} computed on the calibration detections of
+wording $v$ alone. Since $\mathrm{FDR}$ falls as the threshold rises, \eqref{eq:lambda-worst}
+is the strictest admissible choice and satisfies the constraint in every wording
+simultaneously; being a maximum over strata it needs no multiplicity correction. It is also
+the only one of the three threshold protocols compared in Table~\ref{tab:fdr} that a tool can
+ship as a single number \emph{and} satisfy the constraint in every wording, and
+Section~\ref{sec:exp-fdr} reports what it costs.
+
+\begin{table}[t]
+\caption{The three protocols compared for every calibrator. A run is one phrasing on all
+images. ``Mixed'' fits on all five wordings; ``held-out'' fits on three and deploys on the
+two it never saw; ``transfer'' fits on COCO and deploys on LVIS.}\label{tab:protocols}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lll@{}}
+\toprule
+Protocol & Fitted on & Evaluated on \\
+\midrule
+mixed & five wordings, half the images & the other half, all five \\
+held-out wording & bare, article, photo & image, plural \\
+transfer & COCO, five wordings & LVIS, five wordings, no refit \\
+\bottomrule
+\end{tabular*}
+\end{table}

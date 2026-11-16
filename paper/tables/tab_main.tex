@@ -1,0 +1,18 @@
+\begin{table}[t]
+\caption{Calibration on the COCO half the calibrator never saw. Metrics are computed inside each wording run and averaged over the five runs. ``Band'' restricts to $p\in[0.3,0.9)$ of the uncalibrated score of that run. Lower is better except AP.}
+\label{tab:main}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrr@{}}
+\toprule
+Method & band ECE & band Brier & ECE & Brier & AP \\
+\midrule
+uncalibrated                       & 0.1800 & 0.2287 & 0.0536 & 0.0199 & 0.6395 \\
+temperature scaling                & 0.2123 & 0.2421 & 0.0087 & 0.0173 & 0.6395 \\
+vector scaling                     & 0.0812 & 0.1849 & 0.0051 & 0.0158 & 0.6395 \\
+isotonic regression                & 0.1246 & 0.2428 & 0.0076 & 0.0180 & 0.5236 \\
+per-wording temperature            & 0.2108 & 0.2418 & 0.0079 & 0.0172 & 0.6395 \\
+PhC (phrase, linear)               & 0.0597 & 0.1817 & 0.0040 & 0.0157 & 0.6395 \\
+PhC (phrase, linear, band-weighted) & 0.0324 & 0.1754 & 0.0068 & 0.0157 & 0.6395 \\
+PhC+category                       & \textbf{0.0322} & \textbf{0.1729} & 0.0065 & 0.0155 & 0.6395 \\
+\bottomrule
+\end{tabular*}
+\end{table}

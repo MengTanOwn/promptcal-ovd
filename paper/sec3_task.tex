@@ -1,0 +1,80 @@
+\section{Measuring the dependence on wording}\label{sec:task}
+
+\subsection{What is held fixed}
+
+We evaluate on COCO val2017 \citep{lin2014microsoft}, 5{,}000 images of which \NIMAGES{}
+carry annotations, over 80 categories, and on the LVIS v1.0 minival split
+\citep{gupta2019lvis}, 4{,}809 images and 1{,}203 categories; LVIS images are the same COCO 2017 JPEGs, so the two corpora share a pixel
+source and differ in annotations and vocabulary.
+
+The detector is Grounding DINO \citep{liu2024grounding} with the public Swin-T checkpoint.
+It is used exactly as distributed: no fine-tuning, no prompt tuning, no threshold tuning.
+For each image we query the categories that are actually annotated in it, which is the
+realistic case for an annotation assistant (a user points at what is there) and avoids
+inflating the false-positive count with categories that were never asked for.
+
+Each image is queried five times. In the $v$-th run the phrase for category $c$ is
+
+\begin{equation}
+\phi_v(c) = \big(\text{name},\ \text{a name},\ \text{a photo of a name},\
+\text{an image of a name},\ \text{names}\big)_v ,
+\end{equation}
+
+that is: the bare name, an indefinite article, the two templates that circulate as prompt
+engineering for region--text models, and the plural. We call these the five \emph{wordings}
+and write $\phi$ for a phrase. Everything else, including the image, the category, the
+post-processing and the weights, is identical across the five runs, so any difference in
+the output is attributable to the phrase.
+
+\subsection{Detection records}
+
+Within a run, detections are kept at a score threshold of $0.01$ and capped at the top 80
+per (image, category) pair, which is well inside the operating range of the detector and
+leaves \NDETS{} records on COCO. A detection is \emph{correct} if it matches a
+ground-truth instance of the queried category at IoU $\geq 0.5$, assigned greedily in
+descending score. Matching is done separately inside each run: the five runs are five
+queries, and letting them share one ground-truth instance would score four of the five as
+wrong by construction.
+
+Table~\ref{tab:setup} summarises the two corpora. The band $p\in[0.3,0.9)$ is where a human
+reviews boxes: it is \BANDFRAC{} of the output of a run and holds \BANDPOS{} of its true
+positives, and it is where the detector is least reliable, with a band error of
+\BANDIDN.
+
+\input{tables/tab_setup}
+
+\subsection{Metrics, and why they are computed per run}
+
+The five runs are evaluated separately and the results averaged; pooling them would let one
+phrasing contribute five copies of the same ground-truth instance and would hide exactly the
+effect we are measuring. Inside a run we report:
+
+\begin{itemize}
+\item the expected calibration error over 15 bins (ECE), and the same quantity restricted to
+the operating band with 10 bins (band ECE);
+\item the Brier score, a proper score, and its restriction to the band (band Brier). The
+restricted Brier is the quantity we trust most: it needs no binning, and on the band it is
+computed on the boxes a reviewer would actually see;
+\item average precision (AP) at 101 recall points, computed per category, and the area under
+the risk--coverage curve (AURC) for the selective-prediction view.
+\end{itemize}
+
+AP here is not the official benchmark metric and is not comparable to published
+zero-shot numbers: matching happens inside a run and only over the categories that were
+asked for, so there is no penalty for the categories the image does not contain. It is
+used only to compare the five runs, and the calibrators within a run, on identical
+candidates.
+
+The band mask of a run is fixed by that run's \emph{uncalibrated} score, so every calibrator
+is scored on the same detections. Calibrators are fitted on one half of the images and
+evaluated on the other, split by image rather than by detection: one image contributes about
+\DETPERIMG{} queries that are strongly correlated, and a detection-level split would place
+near-copies on both sides.
+
+\subsection{The quantity we are after}
+
+For an object, we take the highest-scoring box the detector returns for its category in each
+of the five runs. If the phrasing did not matter, these five numbers would agree. We report
+their range, the fraction of objects whose range exceeds $0.1$, and how often the five runs
+disagree about whether the box is correct at all. The same object, five scores, is the unit
+of the measurement; Section~\ref{sec:exp-measure} reports it.

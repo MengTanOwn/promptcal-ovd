@@ -1,0 +1,15 @@
+\begin{table}[t]
+\caption{The five wordings on the same images with the same weights. A row is one phrasing; nothing but the text query changes between rows. ``Band'' is $p\in[0.3,0.9)$ of the uncalibrated score.}
+\label{tab:setup}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrr@{}}
+\toprule
+Wording & detections & per image & positive rate & AP & share in band & ECE \\
+\midrule
+bare               & 1{,}063{,}949 & 215 & 3.2\% & 0.7770 & 4.3\% & 0.0500 \\
+article            & 1{,}155{,}657 & 233 & 2.8\% & 0.7430 & 2.0\% & 0.0602 \\
+photo              & 1{,}170{,}394 & 236 & 2.6\% & 0.4622 & 1.9\% & 0.0596 \\
+image              & 1{,}169{,}850 & 236 & 2.7\% & 0.5020 & 2.2\% & 0.0512 \\
+plural             & 1{,}133{,}371 & 229 & 3.0\% & 0.7217 & 2.6\% & 0.0474 \\
+\bottomrule
+\end{tabular*}
+\end{table}

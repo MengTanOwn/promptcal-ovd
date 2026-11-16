@@ -1,0 +1,144 @@
+\section{Related work}\label{sec:related}
+
+\subsection{Open-vocabulary detection}
+
+Open-vocabulary detection replaces a fixed classifier with a query: a category is described
+at inference time and the detector scores regions against that description. The two families
+that matter here differ in what the query is made of. Region--text alignment methods score a
+region against a word embedding learned from image--caption data, either by contrasting
+whole images with sentences and transferring the classifier to regions
+\citep{radford2021learning} or by supervising the region--phrase alignment directly
+\citep{zhong2022regionclip,yao2022detclip,minderer2023scaling}. Grounded detectors instead
+fuse text tokens with image features inside the detection head, so that the classification
+logit of an object query is computed against the token embeddings of the phrase. The
+transformer decoder that made this possible was designed for closed-set detection
+\citep{carion2020end}; MDETR conditioned it on a whole sentence \citep{kamath2021mdetr}, GLIP
+recast detection as phrase grounding and scaled the grounding supervision
+\citep{li2022grounded}, Grounding DINO added a cross-modality fusion stage to a DINO-style
+detector \citep{liu2024grounding}, and YOLO-World and OV-DINO reorganised the same interface
+for real-time inference and for a unified language-aware fusion
+\citep{cheng2024yolo,wang2024ovdino}. A parallel line lets the query contain boxes as well as
+words, in the form of exemplars drawn on the image
+\citep{xu2023multi,jiang2023trex,jiang2024trex2}, and segmentation at any granularity shares
+the interface \citep{li2024segment}. In every one of these designs the score that the
+user reads is a similarity between a region and a representation of the \emph{query}, not a
+posterior over a fixed label set. That is the property the rest of this paper turns on.
+
+The literature on the query has concentrated on accuracy: which prompt template gives the
+best average precision, whether prompt tuning helps \citep{zhou2022learning}, how to ensemble
+prompt embeddings \citep{radford2021learning}, how to fold the vocabulary into the weights so
+that a text encoder is not needed at inference time \citep{cheng2024yolo}. The question we
+ask is different, and orthogonal to all of them: given that the score is a function of the
+wording, what happens to the \emph{meaning} of the score when the wording changes, and what
+does a threshold fitted under one wording mean under another?
+
+\subsection{What a detection score is a probability of}
+
+That a detector's score is not a probability is not a new observation.
+\citet{hall2020probabilistic} define probabilistic object detection as the task of reporting a
+detection together with its spatial and semantic uncertainty, propose an evaluation measure
+without arbitrary score thresholds, and find that conventional detectors are spatially
+overconfident. Monte Carlo dropout has been used in the same spirit to extract label
+uncertainty from a detector and to reject objects from outside the training set
+\citep{miller2018dropout}. Both treat the label as given: the uncertainty is over \emph{where}
+the object is and \emph{which} of the known classes it belongs to, and the quantity that is
+miscalibrated is a property of the image and the network. Once the label is a sentence typed
+at inference time, the object of uncertainty changes. The same region scored against
+\emph{dog} and against \emph{a photo of a dog} is two different queries, and the two scores are
+two different claims about the same pixels. This paper is about the second kind of
+variability, which the probabilistic detection literature does not have to consider because
+its label set is fixed.
+
+\subsection{Calibration of detectors}
+
+Post-hoc calibration maps a score to a probability using held-out data. The classical options
+are parametric, Platt scaling \citep{platt1999probabilistic} and its per-group generalisation,
+and non-parametric, histogram binning and isotonic regression \citep{zadrozny2002transforming};
+temperature scaling \citep{guo2017calibration} is the one-parameter version that leaves
+accuracy untouched because it is monotone. Calibrated regression
+\citep{kuleshov2018accurate} generalises the idea to continuous outputs, and a body of work
+examines when and how these estimators fail
+\citep{vaicenavicius2019evaluating,nixon2019measuring,wang2023calibration}.
+
+Two assumptions of that literature are violated in our setting. First, calibration is usually
+evaluated as an average over the whole score range, which for a detector is dominated by the
+boxes nobody keeps; we therefore report the error inside the band where review actually
+happens. Second, and more importantly for this paper, the calibrated object is assumed to be
+the model's output on a fixed input distribution. When the input includes a user-typed phrase,
+the distribution that matters is indexed by the phrase, and a map fitted on the marginal over
+phrasings is not the right map for any of them.
+
+The closest precedent lives in a different modality, and it is close enough that the
+difference is worth stating precisely. \citet{zhao2021calibrate} observed that the few-shot
+accuracy of a language model swings with the prompt format and traced the swing to a bias
+towards particular answers; they estimate that bias with a content-free input such as
+``N/A'' and fit, per prompt, an affine map that makes the content-free prediction uniform.
+The premise --- that the object to calibrate is the pair (model, prompt) rather than the model
+alone --- is the one we adopt, and the affine form is the same. What differs is how the map is
+obtained and what it is asked to deliver. A detector has no content-free input: there is no
+image whose detection scores would reveal the bias of the phrase \emph{a photo of a}, so the
+map cannot be measured at deployment from unlabelled probes and has to be predicted from the
+phrase itself. And the target here is not an aggregate accuracy but the calibration of
+individual detections inside an operating band, together with the ordering that a threshold
+acts on. Section~\ref{sec:exp-fdr} shows that the second of these is out of reach for
+any recalibration, contextual or otherwise, which is why the phrase-conditioned map is only
+half of our proposal and the threshold protocol is the other half.
+
+\subsection{Conformal selection and risk control}
+
+Turning a score into a decision with a guarantee is a separate problem from making the score a
+probability. Selective prediction trades coverage for accuracy
+\citep{geifman2017selective,geifman2019selectivenet}, and conformal prediction supplies
+distribution-free coverage guarantees \citep{angelopoulos2023conformal}. Risk-controlling
+prediction sets \citep{bates2021distribution} generalise the guarantee from coverage to an
+arbitrary monotone loss calibrated on a holdout set, and conformalised selection
+\citep{jin2023selection} is the false-discovery-rate case of that framework, which is the
+quantity a user of a detection tool cares about: of the boxes I keep, what fraction is wrong.
+The procedure needs a labelled calibration sample and an exchangeability assumption between
+calibration and test. In a deployment where the user types an arbitrary phrase,
+exchangeability holds comfortably within a phrasing and not at all across phrasings. We adopt
+the procedure and then test that assumption directly, and the answer is negative: a threshold
+fitted on a mixture of wordings does not deliver its target on the wordings the mixture
+contains, and no monotone recalibration of the score changes that, because the target depends
+on the ordering of the boxes rather than on the scale. Requiring the constraint to hold
+\emph{inside} each wording does deliver it, at a cost in kept boxes that is smaller when the
+scores of the wordings already agree --- which is the sense in which conditioning the phrase
+pays for itself.
+
+\subsection{Sensitivity to the prompt}
+
+That a prompt's wording moves the output is by now well documented, mostly for language
+models. The \emph{format} of a prompt alone --- separators, casing, spacing --- produces
+accuracy spreads comparable to the differences between models, and the spread is stable
+enough to be measured by a sensitivity metric computed over a set of format variations
+\citep{sclar2024quantifying}. The \emph{order} of few-shot examples does the same: some
+permutations are near state of the art and others near chance, and a good permutation for one
+model does not transfer to another \citep{lu2022fantastically}. A stronger result is that many
+intentionally irrelevant or even misleading prompts work as well as carefully written ones,
+which undermines the reading that a prompt is understood as an instruction
+\citep{webson2022prompts}. On the vision--language side the template matters enough that a
+prompt is learned rather than written \citep{zhou2022learning}, and CLIP already ensembles
+several hand-written templates because no single one is best \citep{radford2021learning}.
+
+All of this work measures the effect on accuracy: a dataset-level scalar, in a classification
+task where the label set is fixed and every input has one correct answer. The effect we study
+is of the same origin --- the wording is arbitrary from the model's point of view, which is
+the lesson of \citet{webson2022prompts} --- but it is measured somewhere else. We measure it on
+the probability assigned to an \emph{individual detection}, and the quantity at stake is not
+accuracy but the meaning of a threshold: a detector whose average precision barely moves can
+still have an operating point that means something entirely different under a different
+sentence, and that is the case a deployment notices.
+
+\subsection{What is new here}
+
+Calibration, conformal selection and prompt sensitivity are mature as separate literatures,
+and the idea of calibrating per prompt exists in another modality. To our knowledge this is
+the first study that (i) measures the phrasing-induced shift as a property of the individual
+detection rather than of the dataset-level average precision, (ii) predicts a calibrator's
+parameters from the phrase representation, so that a wording not seen during fitting is
+calibrated without a deployment-time probe, (iii) separates what calibration can buy from
+what it cannot --- it moves the scale, so it repairs the band, and it cannot move the ordering,
+so it cannot rescue a shared threshold --- and locates the coverage gain of a
+phrase-conditioned score in the threshold-selection protocol rather than in the calibrator
+alone, and (iv) evaluates the five wordings as five separate runs instead of pooling them,
+which is what a deployment actually sees.
