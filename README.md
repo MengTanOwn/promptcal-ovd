@@ -77,11 +77,11 @@ export PROMPTCAL_DATA=/path/to/data
 
 promptcal extract --bench coco          # 5.69M detections, ~55 min on a 3090
 promptcal wording                      # -> results/p1_describe.json
-promptcal calibration                  # -> results/p2_calibration.json   (~7 min)
-promptcal bootstrap                    # -> results/p2b_ci.json           (~2 min)
-promptcal conformal                    # -> results/p3_conformal.json     (~3 min)
+promptcal calibration                  # -> results/p2_calibration.json   (~45 s)
+promptcal bootstrap                    # -> results/p2b_ci.json           (~25 s)
+promptcal conformal                    # -> results/p3_conformal.json     (~30 s)
 promptcal extract --bench lvis          # 6.06M detections, ~65 min
-promptcal transfer                     # -> results/p4_transfer.json      (~3 min)
+promptcal transfer                     # -> results/p4_transfer.json      (~75 s)
 promptcal macros && promptcal figures   # -> paper/nums.tex, paper/tables, paper/fig
 ```
 

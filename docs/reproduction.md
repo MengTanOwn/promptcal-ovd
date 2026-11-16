@@ -29,11 +29,11 @@ still running.
 |---|---|---|---|
 | 1 | `promptcal extract --bench coco` | 1x RTX 3090 | ~55 min |
 | 2 | `promptcal wording` | CPU | 20 s |
-| 3 | `promptcal calibration` | 1 GPU (any) | ~1 min |
-| 4 | `promptcal bootstrap` | 1 GPU | ~2 min |
-| 5 | `promptcal conformal` | 1 GPU | ~2 min |
+| 3 | `promptcal calibration` | 1 GPU (any) | 45 s |
+| 4 | `promptcal bootstrap` | 1 GPU | 22 s |
+| 5 | `promptcal conformal` | 1 GPU | 27 s |
 | 6 | `promptcal extract --bench lvis` | 1x RTX 3090 | ~65 min |
-| 7 | `promptcal transfer` | 1 GPU | ~3 min |
+| 7 | `promptcal transfer` | 1 GPU | 75 s |
 | 8 | `promptcal macros && promptcal figures` | CPU | 15 s |
 
 `scripts/reproduce_all.sh` runs exactly this sequence and stops at the first failure.
