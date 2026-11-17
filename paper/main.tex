@@ -56,22 +56,23 @@ control for open-vocabulary detectors}
 \affil[3]{\orgdiv{College of Artificial Intelligence (CUIT Shuangliu Industrial College)}, \orgname{Chengdu University of Information Technology}, \orgaddress{\city{Chengdu}, \postcode{610225}, \state{Sichuan}, \country{China}}}
 
 \abstract{An open-vocabulary detector is asked for a category by typing a phrase. The
-score it returns is read as the probability that the box is right, but it is computed
-against the phrase, so it is a property of the wording as much as of the region. We
-measure that dependence: holding images, boxes and category fixed and changing only the
-phrasing, the score of the same object moves by \SPREADPTS{} on average, \SPREADFRAC{} of
-instances move by more than $0.1$, and average precision ranges from \APMIN{} to \APMAX.
-We propose prompt-conditioned calibration (PhC), which predicts the two parameters of an
+score it returns is read as the probability that the box is right, but the score is computed
+against the phrase, so it depends on the wording as much as on the region. We measure this
+dependence. Holding images, boxes and categories fixed and changing only the phrasing, the
+score of the same object moves by \SPREADPTS{} on average, \SPREADFRAC{} of the instances
+move by more than $0.1$, and average precision ranges from \APMIN{} to \APMAX. We propose
+prompt-conditioned calibration (PhC), which predicts the two parameters of an
 affine-in-logit map from a 33-dimensional descriptor of the phrase, built from the text
-embedding the detector already computes. The map is strictly increasing in the score for a
-fixed phrase, so average precision is untouched and no extra forward pass is needed. Band
-error falls from \BANDID{} to \BANDPHC{} on COCO and from \TRBANDID{} to \TRBANDPHC{} on
-LVIS without refitting, where a per-category table has nothing to look up. Calibration,
-however, is not risk control: a threshold fitted on the mixed wordings overshoots its false
-discovery target by up to a factor of \FDROVERSHOOT{} on the wording it was not tuned for,
-and no monotone map can repair this, because that target is set by the ordering of the
-boxes. Selecting the threshold inside every wording does hold, and under that guarantee
-the calibrated score keeps \WCGAIN{} more boxes than the uncalibrated one.}
+embedding that the detector already computes. For a fixed phrase the map is strictly
+increasing in the score, so average precision is unchanged, and no additional forward pass
+is needed. Inside the score range where reviewers work, the calibration error falls from
+\BANDID{} to \BANDPHC{} on COCO and from \TRBANDID{} to \TRBANDPHC{} on LVIS without
+refitting, where a per-category table has nothing to look up. Calibration, however, is not
+risk control. A threshold fitted on the mixed wordings reaches \FDROVERSHOOT{} times its
+false discovery target on the wording for which it was not tuned, and no monotone map can
+correct this, because the target is set by the ordering of the boxes. Selecting the
+threshold within every wording does hold the target, and under that guarantee the calibrated
+score keeps \WCGAIN{} more boxes than the uncalibrated one.}
 
 \keywords{open-vocabulary detection, calibration, prompt sensitivity, conformal
 selection, false discovery rate, reliability}

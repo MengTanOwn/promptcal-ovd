@@ -374,14 +374,14 @@ def _worst_over_runs(p3, method, proto, alpha):
 def tab_fdr(p3):
     alpha = "0.30"
     lines = [r"\begin{table}[t]",
-             r"\caption{Three ways to ship a threshold at target $\alpha=" + alpha + r"$, "
+             r"\caption{Three ways to choose a threshold at target $\alpha=" + alpha + r"$, "
              r"fitted on the calibration half and measured on the other. ``Pooled'' is one "
              r"$\hat\lambda$ from the calibration rows of all five wordings, ``worst-case'' "
              r"is the most conservative of the five per-wording $\hat\lambda$, and "
-             r"``per-wording'' selects inside each wording. A cell pair is the false "
+             r"``per-wording'' selects inside each wording. Each cell pair gives the false "
              r"discovery rate of the \emph{worst} of the five wordings and the number of "
-             r"boxes kept across all five; the worst wording is the one a guarantee has to "
-             r"cover.}",
+             r"boxes kept across all five. The worst wording is the one that a guarantee has "
+             r"to cover.}",
              r"\label{tab:fdr}"]
     pr = [p for p in ("pooled", "worst", "per_wording") if p in p3]
     head_name = {"pooled": r"pooled $\hat\lambda$",
