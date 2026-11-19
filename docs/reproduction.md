@@ -8,20 +8,21 @@ export PROMPTCAL_DATA=/path/to/data
 pip install -e ".[extract,figures,dev]"
 ```
 
-## The quick path: manuscript from the committed results
+## The quick path: every number, without a GPU
 
-The JSON of every experiment in the paper is committed under `results/`, so the paper can
-be rebuilt without a GPU and without touching the detector:
+The JSON of every experiment in the paper is committed under `results/`, so the tables and
+figures can be rebuilt without a GPU and without touching the detector:
 
 ```bash
-promptcal macros     # nums.tex + tables/tab_*.tex
-promptcal figures    # fig/fig1_wording.pdf, fig2_calib.pdf, fig3_fdr.pdf
-make paper           # pdflatex x2 + bibtex, needs paper/sn-jnl.cls
+promptcal macros     # paper/nums.tex + paper/tables/tab_*.tex
+promptcal figures    # paper/fig/fig1_wording.pdf, fig2_calib.pdf, fig3_fdr.pdf
 ```
 
 Both commands read `results/*.json`; a missing file makes the corresponding macros print
-`--` instead of failing, which is how the manuscript can be compiled while an experiment is
-still running.
+`--` instead of failing, which is how a manuscript can be compiled while an experiment is
+still running.  They create `paper/` if it does not exist.  The LaTeX source itself is not
+part of this repository: `nums.tex` and the `tabular` bodies in `tables/` are meant to be
+`\input` into a document built on the Springer Nature `sn-jnl` template.
 
 ## The full path
 
@@ -127,7 +128,7 @@ needs the GPU for more than a minute.
 
 `paper/nums.tex` is the only place a number appears; the sections refer to `\MACRO{}` and
 never to a literal.  If a re-run moves a number, the manuscript moves with it — except for
-the prose, which quotes some values in words ("a factor of 5.6").  Those are also macros.
+the prose, which quotes some values in words ("a factor of 5.6").  Those are macros too.
 
 ## Common snags
 
@@ -143,5 +144,6 @@ recomputed from them.
 (see `docs/design.md`); if it still does not fit, lower `--cap`, which bounds the number of
 boxes kept per (category, wording) per image.
 
-**`File 'sn-jnl.cls' not found`** — the class is not redistributed here.  See
-`paper/README.md`.
+**`File 'sn-jnl.cls' not found`** — neither the class nor the manuscript source is
+redistributed here.  Download the Springer Nature LaTeX template, put `sn-jnl.cls` and
+`sn-basic.bst` next to your copy of the source, and run `pdflatex`/`bibtex` as usual.

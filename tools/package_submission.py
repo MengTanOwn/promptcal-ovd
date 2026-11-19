@@ -6,7 +6,11 @@ that a stray local figure, a ``.bbl`` from an older bibliography or a stray resu
 cannot end up in the upload.
 
 It also recompiles the manuscript, so it needs ``pdflatex`` and ``bibtex`` on PATH and the
-Springer class files in ``paper/`` (see ``paper/README.md``).
+Springer class files in ``paper/``.
+
+The manuscript source is deliberately not part of the released repository, so this script
+only runs in the authors' working copy, where ``paper/`` exists.  It is kept here because
+it documents exactly which files the journal receives.
 """
 import os
 import shutil

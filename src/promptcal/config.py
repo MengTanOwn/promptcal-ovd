@@ -8,6 +8,8 @@ variable                     meaning                                     default
 ``PROMPTCAL_DATA``           root holding annotations and images         ``./data``
 ``PROMPTCAL_FEATURES``       where the extractor writes its shards       ``./features``
 ``PROMPTCAL_RESULTS``        where the experiments write their JSON      ``./results``
+``PROMPTCAL_PAPER``          where ``macros``/``figures`` write their
+                             output (``nums.tex``, ``tables/``, ``fig/``) ``./paper``
 ===========================  ==========================================  =============
 
 Within the data root, the COCO and LVIS subtrees are looked up under both ``coco`` and

@@ -5,7 +5,7 @@ BENCH   ?= coco
 ALPHAS  ?= 0.05,0.10,0.20,0.30
 
 .PHONY: help install test lint data-check extract wording calibration bootstrap \
-        conformal transfer numbers figures paper clean
+        conformal transfer numbers figures clean
 
 help:
 	@echo "make install      install the package (analysis only)"
@@ -21,7 +21,6 @@ help:
 	@echo "make transfer     fit on COCO, deploy on LVIS   (needs both shard sets)"
 	@echo "make numbers      write the paper's macros and tables"
 	@echo "make figures      draw the paper's figures"
-	@echo "make paper        numbers + figures + pdflatex"
 
 install:
 	$(PY) -m pip install -e .
@@ -62,10 +61,5 @@ numbers:
 figures:
 	$(PY) -m promptcal.cli figures
 
-paper: numbers figures
-	cd paper && pdflatex -interaction=nonstopmode main.tex && \
-	  bibtex main && pdflatex -interaction=nonstopmode main.tex && \
-	  pdflatex -interaction=nonstopmode main.tex
-
 clean:
-	rm -rf paper/*.aux paper/*.bbl paper/*.blg paper/*.log paper/*.out
+	rm -rf build dist .pytest_cache .ruff_cache

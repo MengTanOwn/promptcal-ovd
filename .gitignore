@@ -13,21 +13,11 @@ results/_dry_*.json
 results/_test_*.json
 results/_check_*.json
 
-# LaTeX build products
-paper/*.aux
-paper/*.bbl
-paper/*.blg
-paper/*.log
-paper/*.out
-paper/*.synctex.gz
-paper/*.fls
-paper/*.fdb_latexmk
-paper/fig/*.png
+# The manuscript source is not distributed with the code.  `promptcal macros` and
+# `promptcal figures` write nums.tex, tables/ and fig/ here on demand, so the directory is
+# rebuilt locally and stays out of git.
+/paper/
 /submission/
-
-# the Springer class files are not redistributed: download the template instead
-paper/sn-jnl.cls
-paper/sn-*.bst
 
 # Python
 __pycache__/

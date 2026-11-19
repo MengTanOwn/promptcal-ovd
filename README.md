@@ -86,9 +86,13 @@ promptcal macros && promptcal figures   # -> paper/nums.tex, paper/tables, paper
 ```
 
 The result JSONs of the published runs are committed under `results/`, so the last two
-commands work without re-running anything: clone, run `promptcal macros`, compile the
-paper, and you get the numbers in the PDF.  Re-running an experiment overwrites its JSON
-and the manuscript follows.
+commands work without re-running anything and without a GPU.  Re-running an experiment
+overwrites its JSON, and the regenerated macros and tables follow it.
+
+The LaTeX source of the manuscript is not part of this repository.  `promptcal macros` and
+`promptcal figures` create `paper/` if it is absent and write `nums.tex`, `tables/*.tex` and
+`fig/*.pdf` into it, which is the path the source expects.  `paper/` is therefore ignored by
+git here.
 
 `docs/reproduction.md` gives the expected console output of each stage, the runtime, and
 the tolerances to expect on a different GPU or BLAS.
@@ -141,7 +145,7 @@ src/promptcal/
 ├── experiments/        the five studies, one module each
 ├── report/             macros and figures for the manuscript
 └── cli.py              `promptcal <command>`
-paper/                  LaTeX source of the manuscript
+paper/                  generated: nums.tex, tables/, fig/  (not tracked; see above)
 results/                the JSON of every experiment reported in the paper
 tests/                  unit and property tests (no data, no GPU needed)
 docs/                   data, reproduction, and design notes
@@ -190,5 +194,7 @@ MIT, see [`LICENSE`](LICENSE).  The code calls, but does not vendor, the followi
 - **COCO val2017** — annotations CC BY 4.0, images per the COCO terms.
 - **LVIS v1.0** — annotations CC BY 4.0; its images are the COCO 2017 JPEGs.
 
-The manuscript in `paper/` uses the Springer `sn-jnl` class, which is *not* redistributed
-here; download the Springer Nature LaTeX template to compile it (see `paper/README.md`).
+The LaTeX source of the manuscript is not distributed here.  The fragments this code
+generates — `nums.tex` (macro definitions), `tables/*.tex` (`tabular` bodies) and
+`fig/*.pdf` — are self-contained and can be `\input` into any document that uses the
+Springer Nature `sn-jnl` template, which is likewise not redistributed.
