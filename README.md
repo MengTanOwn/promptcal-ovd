@@ -42,7 +42,7 @@ of the numbers in the paper, and it is implemented in `promptcal/experiments/com
 ## Install
 
 ```bash
-git clone https://github.com/your-org/promptcal-ovd.git
+git clone https://github.com/MengTanOwn/promptcal-ovd.git
 cd promptcal-ovd
 pip install -e .                 # analysis only: numpy + torch
 pip install -e ".[extract,figures,dev]"   # + transformers, OpenCV, matplotlib, pytest
@@ -168,7 +168,7 @@ on a synthetic calibration set.
 @article{tan2026naming,
   title   = {Naming the object changes the answer: calibration and risk control for
              open-vocabulary detectors},
-  author  = {Tan, Meng and Zhou, Shengkai and Lin, Ling},
+  author  = {Tan, Meng},
   journal = {Applied Intelligence},
   year    = {2026},
   note    = {Under review}
@@ -177,8 +177,9 @@ on a synthetic calibration set.
 
 `CITATION.cff` carries the same information for GitHub's "Cite this repository" button.
 
-If you are the one publishing this repository, `docs/release-checklist.md` lists what to
-change first (the `your-org` placeholder, the tag, the DOI).
+The repository is published at <https://github.com/MengTanOwn/promptcal-ovd>.  For a new
+version, `docs/release-checklist.md` lists the steps that must be repeated (tag, DOI,
+checks).
 
 ## License and third-party components
 

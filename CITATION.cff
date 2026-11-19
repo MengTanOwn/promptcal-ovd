@@ -8,7 +8,7 @@ abstract: >-
 type: software
 version: 1.0.0
 license: MIT
-repository-code: "https://github.com/your-org/promptcal-ovd"
+repository-code: "https://github.com/MengTanOwn/promptcal-ovd"
 keywords:
   - open-vocabulary detection
   - calibration
@@ -18,19 +18,11 @@ keywords:
 authors:
   - family-names: Tan
     given-names: Meng
-  - family-names: Zhou
-    given-names: Shengkai
-  - family-names: Lin
-    given-names: Ling
 preferred-citation:
   type: article
   title: "Naming the object changes the answer: calibration and risk control for open-vocabulary detectors"
   authors:
     - family-names: Tan
       given-names: Meng
-    - family-names: Zhou
-      given-names: Shengkai
-    - family-names: Lin
-      given-names: Ling
   journal: Applied Intelligence
   year: 2026

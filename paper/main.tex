@@ -38,22 +38,22 @@
 % queue of floats from forcing a premature page break.
 \setcounter{totalnumber}{5}
 
+% sn-jnl appends ";\ " after every e-mail address, which is right for a list and leaves a
+% dangling semicolon on a single-author paper.  There is one author here, so nothing follows
+% the address and the separator is dropped.
+\makeatletter
+\def\email#1{\global\advance\emailcnt by 1\relax
+  \g@addto@macro\corrauthemail{\textcolor{blue}{#1}}}
+\makeatother
+
 \begin{document}
 
 \title[Naming the object]{Naming the object changes the answer: calibration and risk
 control for open-vocabulary detectors}
 
-\author[1]{\fnm{Meng} \sur{Tan}}\email{mengtanmtan@gmail.com}
-
-\author[2]{\fnm{Shengkai} \sur{Zhou}}\email{zhousk095@aliyun.com}
-
-\author[3]{\fnm{Ling} \sur{Lin}}\email{linling@cuit.edu.cn}
+\author*[1]{\fnm{Meng} \sur{Tan}}\email{mengtanmtan@gmail.com}
 
 \affil[1]{\orgdiv{School of Computing and Artificial Intelligence}, \orgname{Southwestern University of Finance and Economics}, \orgaddress{\city{Chengdu}, \postcode{611130}, \state{Sichuan}, \country{China}}}
-
-\affil[2]{\orgdiv{School of Business Administration}, \orgname{Southwestern University of Finance and Economics}, \orgaddress{\city{Chengdu}, \postcode{611130}, \state{Sichuan}, \country{China}}}
-
-\affil[3]{\orgdiv{College of Artificial Intelligence (CUIT Shuangliu Industrial College)}, \orgname{Chengdu University of Information Technology}, \orgaddress{\city{Chengdu}, \postcode{610225}, \state{Sichuan}, \country{China}}}
 
 \abstract{An open-vocabulary detector is asked for a category by typing a phrase. The
 score it returns is read as the probability that the box is right, but the score is computed
@@ -104,14 +104,17 @@ The authors declare that they have no competing interests.
 \bmhead{Data availability}
 COCO \citep{lin2014microsoft} is openly available; LVIS \citep{gupta2019lvis} is
 distributed through the LVIS project and requires registration. The detector weights
-used here are public \citep{liu2024grounding}. Detector dumps, fitted calibrators and
-the scripts that reproduce every number and figure are released with the paper.
+used here are public \citep{liu2024grounding}.
+
+\bmhead{Code availability}
+The code that produces every number, table and figure in this paper is available at
+\url{https://github.com/MengTanOwn/promptcal-ovd} under the MIT licence. The repository
+contains the extraction and calibration code, the fitting and selection procedures, and
+the released results from which \texttt{nums.tex} and all five tables are regenerated.
 
 \bmhead{Author contributions}
-M.T. designed the study, implemented the calibrators and the selection procedure, ran
-the experiments and wrote the manuscript. S.Z. contributed the measurement protocol and
-the statistical analysis. L.L. contributed the transfer experiments and the figure
-design. All authors reviewed and approved the final manuscript.
+M.T. is the sole author. He designed the study, implemented the calibrators and the
+selection procedure, ran the experiments, analysed the results, and wrote the manuscript.
 
 \renewcommand{\bibfont}{\footnotesize}
 \setlength{\bibsep}{0.5em}

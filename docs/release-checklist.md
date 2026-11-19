@@ -1,10 +1,12 @@
 # Release checklist
 
-Before pushing this repository to a public host:
+Checks for a public release of this repository.  They were carried out for v1.0.0, the
+release that accompanies the submission, and must be repeated for every later version.
 
-1. **Replace the placeholder owner.**  `your-org` appears in `README.md`, `CITATION.cff`
-   and `pyproject.toml` (`[project.urls]`).  Set it to the account or organisation that will
-   host the repository, then check that `pip install -e .` still resolves the URLs.
+1. **Keep the owner in sync.**  The URL `https://github.com/MengTanOwn/promptcal-ovd`
+   appears in `README.md`, `CITATION.cff`, `pyproject.toml` (`[project.urls]`) and in the
+   code-availability statement of the manuscript (`paper/main.tex`).  If the repository
+   moves, update all of them, then check that `pip install -e .` still resolves the URLs.
 2. **Decide about the manuscript.**  `paper/` is included; the Springer class files are
    not, by design (see `paper/README.md`).  If the journal's policy forbids posting the
    source of a manuscript under review, drop `paper/` and keep `results/` — the macros and
