@@ -18,6 +18,7 @@ results/_check_*.json
 # rebuilt locally and stays out of git.
 /paper/
 /submission/
+/submission_jrtip/
 
 # Python
 __pycache__/

@@ -281,14 +281,20 @@ def _row(name, d, cols):
     return (f"{LAB[name]:<34} & " + " & ".join(cols) + r" \\")
 
 
+# Every table is emitted as a starred float at ``\textwidth``.  A starred float is identical
+# to an unstarred one in a one-column document and spans both columns in a two-column one,
+# and the tables here have five to seven columns, so they need the full measure either way.
+# That lets one generator serve both the single-column and the journal's double-column build.
+
+
 def tab_setup(p1, p2):
     v = p1["variants"]
-    lines = [r"\begin{table}[t]",
+    lines = [r"\begin{table*}[t]",
              r"\caption{The five wordings on the same images with the same weights. A row "
              r"is one phrasing; nothing but the text query changes between rows. ``Band'' "
              r"is $p\in[0.3,0.9)$ of the uncalibrated score.}",
              r"\label{tab:setup}",
-             r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrr@{}}",
+             r"\footnotesize", r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrr@{}}",
              r"\toprule",
              r"Wording & detections & per image & positive rate & AP & share in band & "
              r"ECE \\",
@@ -299,19 +305,19 @@ def tab_setup(p1, p2):
                      f"{100*d['pos_rate']:.1f}\\% & {d['ap']:.4f} & "
                      f"{100*d['frac_gt_0_3']:.1f}\\% & "
                      f"{d['ece']:.4f} \\\\".replace(",", "{,}"))
-    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table}"]
+    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table*}"]
     _write("tables/tab_setup.tex", lines)
 
 
 def tab_main(p2):
     m = p2["mixed"]
-    lines = [r"\begin{table}[t]",
+    lines = [r"\begin{table*}[t]",
              r"\caption{Calibration on the COCO half the calibrator never saw. Metrics are "
              r"computed inside each wording run and averaged over the five runs. ``Band'' "
              r"restricts to $p\in[0.3,0.9)$ of the uncalibrated score of that run. Lower is "
              r"better except AP.}",
              r"\label{tab:main}",
-             r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrr@{}}",
+             r"\footnotesize", r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrr@{}}",
              r"\toprule",
              r"Method & band ECE & band Brier & ECE & Brier & AP \\",
              r"\midrule"]
@@ -327,7 +333,7 @@ def tab_main(p2):
         if abs(m[k]["band_brier"] - best_bb) < 1e-9:
             c[1] = r"\textbf{" + c[1] + "}"
         lines.append(_row(k, m[k], c))
-    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table}"]
+    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table*}"]
     _write("tables/tab_main.tex", lines)
 
 
@@ -335,12 +341,12 @@ def tab_heldout(p2):
     h = p2.get("heldout")
     if not h:
         return
-    lines = [r"\begin{table}[t]",
+    lines = [r"\begin{table*}[t]",
              r"\caption{Fitted on three wordings (bare, article, photo) and deployed on the "
              r"two it never saw. The uncalibrated row is the reference: a calibrator is only "
              r"useful here if it beats doing nothing on an unseen wording.}",
              r"\label{tab:heldout}",
-             r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr@{}}",
+             r"\footnotesize", r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr@{}}",
              r"\toprule",
              r"Method & \multicolumn{2}{c}{``an image of a''} & \multicolumn{2}{c}{plural} \\",
              r"\cmidrule(lr){2-3}\cmidrule(l){4-5}",
@@ -352,7 +358,7 @@ def tab_heldout(p2):
         c = [f(h[k]["image"]["band_ece"], 4), f(h[k]["image"]["band_brier"], 4),
              f(h[k]["plural"]["band_ece"], 4), f(h[k]["plural"]["band_brier"], 4)]
         lines.append(_row(k, h[k], c))
-    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table}"]
+    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table*}"]
     _write("tables/tab_heldout.tex", lines)
 
 
@@ -373,7 +379,7 @@ def _worst_over_runs(p3, method, proto, alpha):
 
 def tab_fdr(p3):
     alpha = "0.30"
-    lines = [r"\begin{table}[t]",
+    lines = [r"\begin{table*}[t]",
              r"\caption{Three ways to choose a threshold at target $\alpha=" + alpha + r"$, "
              r"fitted on the calibration half and measured on the other. ``Pooled'' is one "
              r"$\hat\lambda$ from the calibration rows of all five wordings, ``worst-case'' "
@@ -387,6 +393,7 @@ def tab_fdr(p3):
     head_name = {"pooled": r"pooled $\hat\lambda$",
                  "worst": r"worst-case $\hat\lambda$",
                  "per_wording": r"per-wording $\hat\lambda$"}
+    lines.append(r"\footnotesize")
     lines.append(r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l" + "rr" * len(pr) + r"@{}}")
     lines.append(r"\toprule")
     hdr = " & " + " & ".join(r"\multicolumn{2}{c}{" + head_name[p] + "}" for p in pr) + r" \\"
@@ -413,19 +420,19 @@ def tab_fdr(p3):
                 s = r"\textbf{" + s + "}"
             out.append(s + f" & {kp:,}".replace(",", "{,}"))
         lines.append(f"{LAB[k]} & " + " & ".join(out) + r" \\")
-    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table}"]
+    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table*}"]
     _write("tables/tab_fdr.tex", lines)
 
 
 def tab_transfer(p4):
     d = p4.get("methods", p4)
-    lines = [r"\begin{table}[t]",
+    lines = [r"\begin{table*}[t]",
              r"\caption{Fitted on COCO and deployed on the LVIS minival split without "
              r"refitting anything, including the projection used by the phrase "
              r"descriptor. None of the 1{,}203 LVIS categories was seen during fitting, "
              r"so a calibrator with a table indexed by category has nothing to look up.}",
              r"\label{tab:transfer}",
-             r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr@{}}",
+             r"\footnotesize", r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr@{}}",
              r"\toprule",
              r"Method & band ECE & band Brier & ECE & AP \\",
              r"\midrule"]
@@ -438,7 +445,7 @@ def tab_transfer(p4):
         if best is not None and abs(d[k]["band_ece"] - best) < 1e-9:
             c[0] = r"\textbf{" + c[0] + "}"
         lines.append(_row(k, d[k], c))
-    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table}"]
+    lines += [r"\bottomrule", r"\end{tabular*}", r"\end{table*}"]
     _write("tables/tab_transfer.tex", lines)
 
 
